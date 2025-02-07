@@ -10,7 +10,7 @@ require('dotenv').config()
 const MONGO_CONN_STRING = process.env.MONGO_CONN_STRING
 const JWT_SECRET = process.env.JWT_SECRET
 const app = express();
-app.use(express.json()); // can't parse the req.body without this
+app.use(express.json()); // can't parse the req.body without this   
 mongoose.connect(MONGO_CONN_STRING)
 
 // middleware
