@@ -1,20 +1,37 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ObjectId = mongoose.ObjectId;
 
-const User = new Schema({
-    email: { type: String, unique: true },
-    name: String,
-    password: String
+const userSchema = new Schema({
+    email: { 
+        type: String, 
+        unique: true
+    },
+    username: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    }
 })
 
-const Todo = new Schema({
-    userId: ObjectId,
-    title: String,
-    done: Boolean
+const todoSchema = new Schema({
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    title: {
+        type: String,
+        required: true,
+    },
+    done: {
+        type: Boolean,
+        required: true,
+    }
 })
 
-const UserModel = mongoose.model('users', User)
-const TodoModel = mongoose.model('todos', Todo)
+const userModel = mongoose.model('users', userSchema)
+const todoModel = mongoose.model('todos', todoSchema)
 
-module.exports = ({UserModel, TodoModel})
+module.exports = ({userModel, todoModel})
