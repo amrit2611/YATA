@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { userModel } = require('../db');
+const { userModel } = require('../models');
 const jwt = require('jsonwebtoken');
 const { z } = require('zod');
 
@@ -19,49 +19,70 @@ userRouter.post('/signup', async (req, res) => {
     const parsedDataWithSuccess = requiredBody.safeParse(req.body);
     console.log(parsedDataWithSuccess)
     if (!parsedDataWithSuccess.success) {
-        res.json({
+        return res.json({
             message: "Incorrect format",
             error: parsedDataWithSuccess.error
-        })
-        return;
+        });
+    } else {
+        try {
+            const email = req.body.email;
+            const password = req.body.password;
+            const username = req.body.username;
+            const hashedpassword = await bcrypt.hash(password, 11)
+            console.log(`hashed password for this user: ${hashedpassword}`)
+            const user = await userModel.create({
+                email: email,
+                username: username,
+                password: hashedpassword
+            })
+            console.log(`user created: ${user._id}`)
+            return res.status(200).json({
+                message: 'user created successfully',
+                userId: user._id
+            })
+        } catch (err) {
+            return res.status(500).json({
+                message: 'error creating user',
+                error: err.message
+            })
+        }
     }
-    const email = req.body.email;
-    const password = req.body.password;
-    const name = req.body.name;
-    const hashedpassword = await bcrypt.hash(password, 11)
-    console.log(hashedpassword)
-    await UserModel.create({
-        email: email,
-        name: name,
-        password: hashedpassword
-    })
-    res.json({
-        message: "You have successfully signed up"
-    })
-    console.log("you have successfully signed up");
 })
 
 
-userRouter.post('/signin', logger, async (req, res) => {
+userRouter.post('/signin', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-    const user = await userModel.findOne({
-        email: email
-    })
-    if (!user) { res.status(403).json({ message: "User does not exist in our database" }); return; }
-
-    const passwordMatched = bcrypt.compare(password, user.password);
-
-    if (passwordMatched) {
-        console.log(user.password)
-        const token = jwt.sign({
-            id: user._id
-        }, ACCESS)
-        res.json({
-            "token": token
+    try {
+        const user = await userModel.findOne({
+            email: email,
         })
-    } else {
-        res.status(403).json({ message: "Incorrect Credentials" });
+        if (!user) {
+            return res.status(403).json({
+                message: 'invalid credentials',
+            })
+        }
+        const passwordMatched = bcrypt.compare(password, user.password);
+        if (passwordMatched) {
+            console.log(user.password)
+            const token = jwt.sign({
+                id: user._id
+            }, ACCESS, {
+                expiresIn: '30m'
+            });
+            return res.status(200).json({
+                "token": token
+            })
+        } else {
+            return res.status(403).json({ 
+                message: "invalid credentials" 
+            });
+        }
+    } catch (err) {
+        return res.status(500).json({
+            message: 'error while signing in',
+            error: err.message
+        })
     }
 })
 
