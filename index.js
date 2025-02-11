@@ -2,7 +2,7 @@ const cors = require('cors');
 const express = require('express')
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const { userRouter } = require('./routes/userRouter');
+const { userRouter, userVerifiedRouter } = require('./routes/userRouter');
 const { todoRouter } = require('./routes/todoRouter');
 const { userMiddleware } = require('./middleware/userMiddleware');
 
@@ -15,7 +15,8 @@ require('dotenv').config()
 
 
 app.use('/home', userRouter);
-app.use('api/v1/todo', userMiddleware, todoRouter);
+app.use('/api/v1/user', userMiddleware, userVerifiedRouter)
+app.use('/api/v1/todo', userMiddleware, todoRouter);
 
 
 async function main() {

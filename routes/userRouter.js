@@ -4,8 +4,9 @@ const jwt = require('jsonwebtoken');
 const { z } = require('zod');
 
 
-const userRouter = Router();
 require('dotenv').config();
+const userRouter = Router();
+const userVerifiedRouter = Router();
 const ACCESS = process.env.ACCESS_SECRET;
 const REFRESH = process.env.REFRESH_SECRET;
 
@@ -96,8 +97,27 @@ userRouter.post('/signin', async (req, res) => {
 })
 
 
-userVerifiedRouter.post
+userVerifiedRouter.post('/logout', async (req, res) => {
+    try {
+        res.clearCookie('access', {
+            httpOnly: true,
+            sameSite: 'Strict',
+            secure: process.env.NODE_ENV === 'production',
+            path: '/'
+        });
+        return res.status(200).json({
+            message: "successfully logged out"
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "error logging out",
+            error: err.message
+        })
+    }
+});
+
 
 module.exports = {
-    userRouter: userRouter
+    userRouter: userRouter,
+    userVerifiedRouter: userVerifiedRouter
 }
