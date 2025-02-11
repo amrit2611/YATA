@@ -70,12 +70,21 @@ userRouter.post('/signin', async (req, res) => {
             }, ACCESS, {
                 expiresIn: '30m'
             });
+
+            res.cookie('access', token, {
+                httpOnly: true,
+                sameSite: 'Strict',
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 30 * 60 * 1000,
+                path: '/'
+            });
+
             return res.status(200).json({
-                "token": token
+                message: "successfullly signed in"
             })
         } else {
-            return res.status(403).json({ 
-                message: "invalid credentials" 
+            return res.status(403).json({
+                message: "invalid credentials"
             });
         }
     } catch (err) {
@@ -86,6 +95,8 @@ userRouter.post('/signin', async (req, res) => {
     }
 })
 
+
+userVerifiedRouter.post
 
 module.exports = {
     userRouter: userRouter
