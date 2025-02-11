@@ -50,9 +50,10 @@ todoRouter.get('/get', async (req, res) => {
 
 
 // delete todos
-todoRouter.delete('/delete', async (req, res) => {
+todoRouter.delete('/delete/:todoId', async (req, res) => {
     const userId = req.userId;
     const todoId = req.params.todoId;
+    console.log(`todoId to delete: ${todoId}`);
     try {
         await todoModel.deleteOne({
             _id: todoId,
@@ -63,7 +64,7 @@ todoRouter.delete('/delete', async (req, res) => {
         })
     } catch (err) {
         return res.status(500).json({
-            message: "error while deleting todo",
+            message: "error while deleting todo", 
             error: err.message
         })
     }
