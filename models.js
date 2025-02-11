@@ -8,7 +8,7 @@ const userSchema = new Schema({
     },
     username: {
         type: String,
-        required: true
+        required: false
     },
     password: {
         type: String,
@@ -17,10 +17,6 @@ const userSchema = new Schema({
 })
 
 const todoSchema = new Schema({
-    userId: { 
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    },
     title: {
         type: String,
         required: true,
@@ -28,7 +24,11 @@ const todoSchema = new Schema({
     done: {
         type: Boolean,
         required: true,
-    }
+    },
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
 })
 
 const userModel = mongoose.model('users', userSchema)
