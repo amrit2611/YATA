@@ -8,7 +8,9 @@ function userMiddleware(req, res, next) {
         req.userId = decodedata.id;
         next();
     } else {
-        res.status(403).json({ message: "Ivalid credentials" })
+        return res.status(403).json({ 
+            message: "authentication failed"
+        })
     }
 }
 
