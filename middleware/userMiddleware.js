@@ -9,7 +9,7 @@ function userMiddleware(req, res, next) {
         });
     }
     try {
-        const decodedata = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedata = jwt.verify(token, process.env.ACCESS_SECRET);
         if (decodedata) {
             req.userId = decodedata.id;
             next();

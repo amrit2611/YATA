@@ -2,9 +2,9 @@ const cors = require('cors');
 const express = require('express')
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const { userRouter, userVerifiedRouter } = require('./routes/userRouter');
 const { todoRouter } = require('./routes/todoRouter');
 const { userMiddleware } = require('./middleware/userMiddleware');
+const { userRouter, userVerifiedRouter } = require('./routes/userRouter');
 
 
 const app = express();
