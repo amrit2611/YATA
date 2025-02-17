@@ -55,6 +55,11 @@ userRouter.post('/signup', async (req, res) => {
 userRouter.post('/signin', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
+    if (!email || !password) {
+        return res.status(400).json({
+            message: "both email and password are required",
+        })
+    }
     try {
         const user = await userModel.findOne({
             email: email,
@@ -66,13 +71,12 @@ userRouter.post('/signin', async (req, res) => {
         }
         const passwordMatched = bcrypt.compare(password, user.password);
         if (passwordMatched) {
-            console.log(user.password)
+            console.log(`password matched: ${user.password}`)
             const token = jwt.sign({
                 id: user._id
             }, ACCESS, {
                 expiresIn: '30m'
             });
-
             res.cookie('access', token, {
                 httpOnly: true,
                 sameSite: 'Strict',
@@ -117,6 +121,34 @@ userVerifiedRouter.post('/logout', async (req, res) => {
     }
 });
 
+
+userVerifiedRouter.put('/update', async (req, res) => {
+    const newPassword = req.body.newPassword;
+    const userId = req.userId;
+    if (!newPassword) { // should also return if newpassword is === old password
+        return res.json({
+            message: "a new password is required"
+        })
+    } else {
+        try {
+            const newHashedPassword = await bcrypt.hash(newPassword, 11);
+            const updatedUser = await userModel.findOneAndUpdate({
+                _id: userId
+            }, {
+                password: newHashedPassword,
+            }, { new: true });
+            return res.status(200).json({
+                message: "password has been updated",
+                userId: updatedUser._id
+            })
+        } catch (err) {
+            return res.status(500).json({
+                message: "there was an issue while updating password",
+                error: err.message
+            })
+        }
+    }
+})
 
 module.exports = {
     userRouter: userRouter,
