@@ -10,7 +10,7 @@
     "nodemon": "^3.1.9",
     "zod": "^3.24.1"
   },
-  "name": "week7",
+  "name": "yata",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

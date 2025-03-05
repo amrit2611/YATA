@@ -64,7 +64,31 @@ todoRouter.delete('/delete/:todoId', async (req, res) => {
         })
     } catch (err) {
         return res.status(500).json({
-            message: "error while deleting todo", 
+            message: "error while deleting todo",
+            error: err.message
+        })
+    }
+})
+
+
+todoRouter.put('/update/:todoId', async (req, res) => {
+    const done = req.body.done;
+    const title = req.body.title;
+    const todoId = req.params.todoId;
+    try {
+        const updatedTodo = await todoModel.findOneAndUpdate({
+            _id: todoId
+        }, {
+            title: title,
+            done: done
+        }, { new: true });
+        console.log(`todo updated: ${updatedTodo._id}`)
+        return res.status(200).json({
+            message: 'todo updated successfully',
+        })
+    } catch (err) {
+        return res.status(500).json({
+            message: 'error while updating todo',
             error: err.message
         })
     }
