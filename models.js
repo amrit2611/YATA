@@ -4,16 +4,17 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
     email: { 
         type: String, 
-        unique: true
-    },
-    username: {
-        type: String,
-        required: false
+        unique: true,
+        required: true
     },
     password: {
         type: String,
         required: true
-    }
+    },
+    username: {
+        type: String,
+        required: true
+    },
 })
 
 const todoSchema = new Schema({
@@ -34,4 +35,4 @@ const todoSchema = new Schema({
 const userModel = mongoose.model('users', userSchema)
 const todoModel = mongoose.model('todos', todoSchema)
 
-module.exports = ({userModel, todoModel})
+module.exports = {userModel, todoModel}

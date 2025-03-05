@@ -122,20 +122,34 @@ userVerifiedRouter.post('/logout', async (req, res) => {
 });
 
 
+// update profile
 userVerifiedRouter.put('/update', async (req, res) => {
-    const newPassword = req.body.newPassword;
-    const userId = req.userId;
-    if (!newPassword) { // should also return if newpassword is === old password
+    const requiredBody = z.object({
+        newEmail: z.string().min(3).max(100).email(),
+        newPassword: z.string().min(6).max(100),
+        newUsername: z.string().min(3).max(100)
+    })
+    const parsedDataWithSuccess = requiredBody.partial().safeParse(req.body);
+    console.log(parsedDataWithSuccess);
+    if (!parsedDataWithSuccess.success) {
         return res.json({
-            message: "a new password is required"
-        })
+            message: "Incorrect format",
+            error: parsedDataWithSuccess.error
+        });
     } else {
         try {
+            const newPassword = req.body.newPassword;
+            const newUsername = req.body.newUsername;
+            const newEmail = req.body.newEmail;
+            const userId = req.userId;
             const newHashedPassword = await bcrypt.hash(newPassword, 11);
+            console.log(`hashed password for this user: ${newHashedPassword}`)
             const updatedUser = await userModel.findOneAndUpdate({
                 _id: userId
             }, {
                 password: newHashedPassword,
+                email: newEmail,
+                username: newUsername
             }, { new: true });
             return res.status(200).json({
                 message: "password has been updated",
@@ -149,6 +163,7 @@ userVerifiedRouter.put('/update', async (req, res) => {
         }
     }
 })
+
 
 module.exports = {
     userRouter: userRouter,
